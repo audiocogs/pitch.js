@@ -89,6 +89,8 @@ int main (int argc, char *argv[]) {
 
 	state->outfile = outfile;
 
+	state->analyzer = new Analyzer(sfinfo.samplerate, "ref_tester");
+
 	/* Let the magic begin */
 
 	while ((readcount = sf_read_double (infile, data, BUFFER_LEN))) {
