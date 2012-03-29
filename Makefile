@@ -2,7 +2,7 @@ TESTDIR := tests
 REF_TARGET := $(TESTDIR)/ref/ref.out
 REF_SOURCE := $(TESTDIR)/ref/*.cc
 CXX := g++
-CXX_FLAGS := -lm
+CXX_FLAGS := -Wall -lm -lsndfile
 
 $(REF_TARGET): $(REF_SOURCE)
 	$(CXX) $(CXX_FLAGS) $^ -o $@
