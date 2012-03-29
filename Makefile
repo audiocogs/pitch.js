@@ -7,6 +7,9 @@ CXX_FLAGS := -Wall -lm -lsndfile
 $(REF_TARGET): $(REF_SOURCE)
 	$(CXX) $(CXX_FLAGS) $^ -o $@
 
+%.data: $(REF_TARGET) %.wav
+	$^ $@
+
 clean:
 	rm -rf $(REF_TARGET)
 
