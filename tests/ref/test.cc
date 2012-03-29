@@ -110,6 +110,13 @@ int main (int argc, char *argv[]) {
 }
 
 void process_data (double *data, int count, ref_state *state) {
-	/* TODO: Well, do something here */
-	fprintf(state->outfile, "BUFFER SIZE: %d\n", count);
+	Analyzer *analyzer = state->analyzer;
+
+	analyzer->input<double*>(data, data + count);
+	analyzer->process();
+	Tone const *tone = analyzer->findTone();
+
+	double freq = tone ? tone->freq : 0.0;
+
+	fprintf(state->outfile, "%d %f\n", count, freq);
 }
