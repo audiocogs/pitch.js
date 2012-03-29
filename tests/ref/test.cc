@@ -17,12 +17,13 @@ typedef enum {
 } ref_test_error;
 
 typedef struct {
+	FILE *outfile;
 	Analyzer *analyzer;
 } ref_state;
 
 using namespace std;
 
-const char * process_data (double *data, int count, ref_state *state) ;
+void process_data (double *data, int count, ref_state *state) ;
 
 int main (int argc, char *argv[]) {
 	if (argc != 3) {
@@ -86,10 +87,12 @@ int main (int argc, char *argv[]) {
 		return REF_ERROR_FILE_WRITE;
 	}
 
+	state->outfile = outfile;
+
 	/* Let the magic begin */
 
 	while ((readcount = sf_read_double (infile, data, BUFFER_LEN))) {
-		fprintf(outfile, "%s", process_data(data, readcount, state));
+		process_data(data, readcount, state);
 	}
 
 	/* "Always close the files you have opened" yeah yeah... */
@@ -104,7 +107,7 @@ int main (int argc, char *argv[]) {
 	return REF_NO_ERROR;
 }
 
-const char *process_data (double *data, int count, ref_state *state) {
+void process_data (double *data, int count, ref_state *state) {
 	/* TODO: Well, do something here */
-	return "TODO";
+	fprintf(state->outfile, "BUFFER SIZE: %d\n", count);
 }
