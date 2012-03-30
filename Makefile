@@ -8,6 +8,8 @@ CXX := g++
 
 CXX_FLAGS := -Wall -lm -lsndfile
 
+all:
+	@for i in *.wav; do make $${i:0:-4}.test; done
 
 $(REF_TARGET): $(REF_SOURCE)
 	$(CXX) $(CXX_FLAGS) $^ -o $@
@@ -25,4 +27,4 @@ $(REF_TARGET): $(REF_SOURCE)
 clean:
 	rm -rf $(REF_TARGET) *.data */*.data */*/*.data *.test */*.test */*/*.test
 
-.PHONY: clean
+.PHONY: all clean
