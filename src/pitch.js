@@ -378,3 +378,7 @@ Analyzer.DanielsonLanczos = function (data, P) { if (!P) return;
 return Analyzer;
 
 }());
+
+if (typeof module !== 'undefined') {
+	module.exports = PitchAnalyzer;
+}
