@@ -37,6 +37,6 @@ for (var i=0; i<l; i++) {
 	file1[i] !== file2[i] && print(i, ec++, file1[i], file2[i]);
 }
 
-if (ec) die(3, "Comparison failed with", ec, "errors");
+if (ec) die(3, "Comparison failed with", ec, "errors out of", l, "(" + Math.round((l - ec) / l * 100) + "% success rate)");
 
 print("Comparison match!");
