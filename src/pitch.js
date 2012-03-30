@@ -66,6 +66,10 @@ Tone.prototype = {
 	stabledb: -inf,
 	age: 0,
 
+	toString: function () {
+		return '{freq: ' + this.freq + ', db: ' + this.db + ', stabledb: ' + this.stabledb + ', age: ' + this.age + '}';
+	},
+
 	harmonics: null
 };
 
