@@ -90,13 +90,13 @@ WavReader.prototype = {
 		}
 	},
 
-	readBuffer3: function (inbuffer, outbuffer) {
+	readBuffer4: function (inbuffer, outbuffer) {
 		for (var i=0; i<outbuffer.length; i++) {
 			outbuffer[i] = inbuffer.readFloatLE(i * 4);
 		}
 	},
 
-	readBuffer4: function (inbuffer, outbuffer) {
+	readBuffer8: function (inbuffer, outbuffer) {
 		for (var i=0; i<outbuffer.length; i++) {
 			outbuffer[i] = inbuffer.readDoubleLE(i * 8);
 		}
