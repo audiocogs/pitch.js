@@ -1,6 +1,7 @@
 TESTDIR := ./tests
 PORT_TARGET := $(TESTDIR)/port/test.js
 REF_TARGET := $(TESTDIR)/ref/ref.out
+PORT_SOURCE := src/pitch.js $(TESTDIR)/tools/wavreader.js
 REF_SOURCE := $(TESTDIR)/ref/*.cc
 
 COMPARE := $(TESTDIR)/tools/compare.js
@@ -14,6 +15,8 @@ all:
 $(REF_TARGET): $(REF_SOURCE)
 	$(CXX) $(CXX_FLAGS) $^ -o $@
 
+$(PORT_TARGET): $(PORT_SOURCE)
+	touch $@ # Nasty, but saves time
 
 %.test: %.ref.data %.port.data
 	$(COMPARE) $^ > $@
