@@ -318,7 +318,7 @@ Analyzer.calculateWindow = function () {
 	var i, w = new Float32Array(FFT_N);
 
 	for (i=0; i<FFT_N; i++) {
-		w[i] = 0.54 - 0.46 * cos(pi2 * i / (FFT_N - 1));
+		w[i] = 0.53836 - 0.46164 * cos(pi2 * i / (FFT_N - 1));
 	}
 
 	return w;
@@ -327,12 +327,11 @@ Analyzer.calculateWindow = function () {
 Analyzer.fft = function (inData, wnd, P) { //return;
 	var N = 1 << P;
 	var data = new Float32Array(N<<1);
-	var j = 0;
 	var M = N / 2;
 	var m = M;
 
-	for (var i=0; i<N; i++, m=M) {
-		data[j*2+0] = inData[i*2+0] * wnd[i];
+	for (var i=0, j=0; i<N; i++, m=M) {
+		data[j*2] = inData[i] * wnd[i];
 		while (m > 1 && m <= j) { j -= m; m >>= 1; }
 		j += m;
 	}
