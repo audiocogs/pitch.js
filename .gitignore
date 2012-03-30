@@ -1,3 +1,5 @@
 *.out
 *.wav
 *.data
+*.test
+node_modules
