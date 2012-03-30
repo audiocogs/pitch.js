@@ -14,8 +14,7 @@ var	pi2	= Math.PI * 2,
 	atan2	= Math.atan2,
 	inf	= 1/0,
 	FFT_P	= 10,
-	FFT_N	= 1 << FFT_P,
-	BUF_N	= 2 * FFT_N;
+	FFT_N	= 1 << FFT_P;
 
 function round (val) {
 	return ~~(val + (val >= 0 ? 0.5 : -0.5));
@@ -104,7 +103,7 @@ Peak.match = function (peaks, pos) {
 function Analyzer (options) {
 	options = extend(this, options);
 
-	this.data = new Float32Array(BUF_N);
+	this.data = new Float32Array(FFT_N);
 	this.fftLastPhase = new Float32Array(FFT_N);
 	this.wnd = Analyzer.calculateWindow();
 	this.tones = [];
@@ -165,17 +164,33 @@ Analyzer.prototype = {
 	},
 
 	process: function (data) {
-		for (i=0; i<data.length; i++) {
-			var s = data[i];
-			var p = s * s;
+		var	o	= this.offset,
+			buf	= this.data,
+			l;
 
-			if (p > this.peak) this.peak = p; else this.peak *= 0.999;
+		while (true) {
+			l = ((data.length % buf.length) - o) || data.length;
 
-			this.data[i] = s;
+			for (var i=0; i<l; i++) {
+				var s = data[i];
+				var p = s * s;
+
+				if (p > this.peak) this.peak = p; else this.peak *= 0.999;
+
+				buf[o + i] = s;
+			}
+
+			o = (o + i) % buf.length;
+
+			if (data.length < buf.length) break;
+
+			data = data.subarray(i);
+
+			this.calcFFT();
+			this.calcTones();
 		}
 
-		this.calcFFT();
-		this.calcTones();
+		this.offset = o;
 	},
 
 	mergeWithOld: function (tones) {
