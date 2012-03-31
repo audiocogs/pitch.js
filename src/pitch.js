@@ -1,6 +1,7 @@
 PitchAnalyzer = this.PitchAnalyzer = (function () {
 
-var	pi2	= Math.PI * 2,
+var	pi	= Math.PI,
+	pi2	= pi * 2,
 	sin	= Math.sin,
 	cos	= Math.cos,
 	pow	= Math.pow,
@@ -373,8 +374,8 @@ Analyzer.DanielsonLanczos = function (data, P) {
 	Analyzer.DanielsonLanczos(data, P - 1);
 	Analyzer.DanielsonLanczos(data.subarray(M * 2), P - 1);
 
-	var wp_r = -2.0 * square(sin(pi2 / N));
-	var wp_i = -sin(pi2 * 2 / N);
+	var wp_r = -2.0 * square(sin(pi / N));
+	var wp_i = -sin(pi2 / N);
 
 	var w_r = 1.0;
 	var w_i = 0.0;
@@ -389,7 +390,7 @@ Analyzer.DanielsonLanczos = function (data, P) {
 		data[n + 1] = data[i * 2 + 1] - temp_i;
 
 		data[i * 2 + 0] += temp_r;
-		data[i * 2 + 1] += temp_r;
+		data[i * 2 + 1] += temp_i;
 
 		var ww_r = w_r * wp_r - w_i * wp_i;
 		var ww_i = w_r * wp_i + w_i * wp_r;
