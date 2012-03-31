@@ -43,6 +43,6 @@ fft.port.data: $(PORT_FFT_TARGET)
 	$^ $@
 
 clean:
-	rm -rf $(REF_TARGET) *.data */*.data */*/*.data *.test */*.test */*/*.test
+	rm -rf $(REF_TARGET) $(REF_FFT_TARGET) *.data */*.data */*/*.data *.test */*.test */*/*.test
 
 .PHONY: all clean
