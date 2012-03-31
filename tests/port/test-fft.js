@@ -14,9 +14,11 @@ function die (code) {
 }
 
 function format_float (n) {
-	n = String(n);
-	var i = n.indexOf('.');
-	return (i === -1 ? n + '.000000' : n.substring(0, i + 7));
+	var s = String(Math.round(n * 1e6));
+	var p = s[0] === '-' ? '-' : '';
+	if (!n) return p + "0.000000";
+	return p + ((n > 0 ? n < 1 : n > -1) ? '0' : '') +
+		s.substring(+!!p, s.length - 6) + '.' + s.substring(s.length - 6);
 }
 
 function process_data (data, window, stream) {
