@@ -359,7 +359,7 @@ Analyzer.fft = function (inData, wnd, P) { //return;
 		j += m;
 	}
 
-	Analyzer.DanielsonLanczos(data, FFT_P);
+	Analyzer.DanielsonLanczos(data, P);
 
 	return data;
 };
