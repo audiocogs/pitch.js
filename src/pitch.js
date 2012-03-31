@@ -364,12 +364,14 @@ Analyzer.fft = function (inData, wnd, P) { //return;
 	return data;
 };
 
-Analyzer.DanielsonLanczos = function (data, P) { if (!P) return;
+Analyzer.DanielsonLanczos = function (data, P) {
+	if (!P) return;
+
 	var N = 1 << P;
 	var M = N / 2;
 
 	Analyzer.DanielsonLanczos(data, P - 1);
-	Analyzer.DanielsonLanczos(data.subarray(M * 2, P - 1), P - 1);
+	Analyzer.DanielsonLanczos(data.subarray(M * 2), P - 1);
 
 	var wp_r = -2.0 * square(sin(pi2 / N));
 	var wp_i = -sin(pi2 * 2 / N);
