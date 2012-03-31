@@ -67,7 +67,7 @@ try {
 	die(4, "Couldn't open file `", outpath, "` for writing");
 }
 
-var analyzer = new Analyzer(infile.sampleRate);
+var analyzer = new Analyzer({sampleRate: infile.sampleRate});
 
 var data;
 
