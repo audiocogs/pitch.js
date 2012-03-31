@@ -16,15 +16,15 @@ function die (code) {
 function format_float (n) {
 	n = String(n);
 	var i = n.indexOf('.');
-	return (i === -1 ? n + '.000000' : n.substring(0, i + 7)) + Array(i === -1 ? 1 : 7 - n.length + i).join('0');
+	return (i === -1 ? n + '.000000' : n.substring(0, i + 7));
 }
 
 function process_data (data, window, stream) {
 	var fft = Analyzer.fft(data, window, BUFFER_P);
 
 	for (var i = 0; i < fft.length; i+=2) {
-		var real = fft[i*2];
-		var imag = fft[i*2 + 1];
+		var real = fft[i];
+		var imag = fft[i + 1];
 
 		stream.write('(' + format_float(real) + ', ' + format_float(imag) +  ')\n');
 	}
