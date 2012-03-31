@@ -45,6 +45,7 @@ function extend (obj) {
 		l	= args.length,
 		i, n;
 
+
 	for (i=1; i<l; i++){
 		for (n in args[i]){
 			if (args[i].hasOwnProperty(n)){
@@ -109,7 +110,7 @@ function Analyzer (options) {
 
 	this.data = new Float32Array(FFT_N);
 	this.fftLastPhase = new Float32Array(FFT_N);
-	this.wnd = Analyzer.calculateWindow();
+	if (this.wnd === null) this.wnd = Analyzer.calculateWindow();
 	this.tones = [];
 }
 
@@ -117,7 +118,6 @@ Analyzer.prototype = {
 	wnd: null,
 	data: null,
 	fft: null,
-	FFT: null,
 	tones: null,
 	fftLastPhase: null,
 
@@ -135,6 +135,10 @@ Analyzer.prototype = {
 
 	getPeak: function () {
 		return 10.0 * log10(this.peak);
+	},
+
+	getFFT: function () {
+		return this.fft;
 	},
 
 	findTone: function (minFreq, maxFreq) {
