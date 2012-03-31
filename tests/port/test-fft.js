@@ -4,9 +4,9 @@ var debug = console.error.bind(console);
 
 var fs = require('fs');
 var Analyzer = require('../../src/pitch.js');
-var WavReader = require('../tools/wavreader.js');
 
-var BUFFER_LEN = 1024;
+var BUFFER_P = 5;
+var BUFFER_LEN = 1 << BUFFER_P;
 
 function die (code) {
 	debug.apply(null, [].slice.call(arguments, 1));
@@ -19,47 +19,29 @@ function format_float (n) {
 	return (i === -1 ? n + '.000000' : n.substring(0, i + 7)) + Array(i === -1 ? 1 : 7 - n.length + i).join('0');
 }
 
-function process_data (data, analyzer, stream) {
-	if (data.length !== BUFFER_LEN) {
-		var ddata = new Float32Array(BUFFER_LEN);
-		ddata.set(data);
-		data = ddata;
+function process_data (data, window, stream) {
+	var fft = Analyzer.fft(data, window, BUFFER_P);
+
+	for (var i = 0; i < fft.length; i+=2) {
+		var real = fft[i*2];
+		var imag = fft[i*2 + 1];
+
+		stream.write('(' + format_float(real) + ', ' + format_float(imag) +  ')\n');
 	}
-
-	analyzer.process(data);
-    var fft = analyzer.getFFT();
-
-    for(var i = 0; i < BUFFER_LEN; i++) {
-        var real = fft[i*2];
-        var imag = fft[i*2 + 1];
-
-        stream.write('(' + format_float(real) + ', ' + format_float(imag) +  ')\n');
-    }
 }
 
 var argv = [].slice.call(process.argv);
 
-if (argv.length !== 4) {
-	die(1, "Usage: test.js <infile> <outfile>");
+if (argv.length !== 3) {
+	die(1, "Usage: test.js <outfile>");
 }
 
-var inpath = argv[2];
-var outpath = argv[3];
+var outpath = argv[2];
 
 
-debug("Generating test file `", outpath, "` from input data in `", inpath, "`");
+debug("Generating test file `", outpath, "` from some example data");
 
-var infile, outfile;
-
-try {
-	infile = new WavReader(inpath);
-} catch (e) {
-	die(2, "Couldn't decode file `", inpath, "`");
-}
-
-if (infile.channelCount !== 1) {
-	die(3, "Input file `", inpath, "` is not mono (has", infile.channelCount, "channels)");
-}
+var outfile;
 
 try {
 	outfile = fs.createWriteStream(outpath, {
@@ -67,20 +49,22 @@ try {
 		flags: 'w+'
 	});
 } catch (e) {
-	die(4, "Couldn't open file `", outpath, "` for writing");
+	die(2, "Couldn't open file `", outpath, "` for writing");
 }
 
 var data = new Float32Array(BUFFER_LEN);
 data[0] = 1;
 
 var wnd = new Float32Array(BUFFER_LEN);
-for(var i = 0; i < BUFFER_LEN; i++) {
-    wnd[i] = 1;
+for (var i = 0; i < BUFFER_LEN; i++) {
+	wnd[i] = 1;
 }
 
-var analyzer = new Analyzer({sampleRate: infile.sampleRate, wnd: wnd});
+process_data(data, wnd, outfile);
 
-process_data(data, analyzer, outfile);
+data[BUFFER_LEN-1] = 1;
+
+process_data(data, wnd, outfile);
 
 outfile.destroySoon();
 
