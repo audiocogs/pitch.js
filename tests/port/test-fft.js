@@ -33,7 +33,7 @@ function process_data (data, analyzer, stream) {
         var real = fft[i*2];
         var imag = fft[i*2 + 1];
 
-        stream.write('(' + real + ', ' + imag +  ')\n');
+        stream.write('(' + format_float(real) + ', ' + format_float(imag) +  ')\n');
     }
 }
 
