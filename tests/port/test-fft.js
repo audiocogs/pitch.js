@@ -70,13 +70,17 @@ try {
 	die(4, "Couldn't open file `", outpath, "` for writing");
 }
 
-var analyzer = new Analyzer({sampleRate: infile.sampleRate});
+var data = new Float32Array(BUFFER_LEN);
+data[0] = 1;
 
-var data;
-
-while (data = infile.readBuffer(BUFFER_LEN)) {
-	process_data(data, analyzer, outfile);
+var wnd = new Float32Array(BUFFER_LEN);
+for(var i = 0; i < BUFFER_LEN; i++) {
+    wnd[i] = 1;
 }
+
+var analyzer = new Analyzer({sampleRate: infile.sampleRate, wnd: wnd});
+
+process_data(data, analyzer, outfile);
 
 outfile.destroySoon();
 
