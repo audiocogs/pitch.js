@@ -1,13 +1,15 @@
-#include "pitch.hh"
+#include "libda/fft.hpp"
 #include <stdio.h>
+#include <stdlib.h>
 #include <vector>
 #include <complex>
 #include <iostream>
-#include <sndfile.h>
 
-#define BUFFER_LEN 1024
 #define DEBUG(...) { fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n"); }
 #define ERROR(...) { fprintf(stderr, "ERROR: "); fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n"); }
+
+static const int BUFFER_P = 5;
+static const int BUFFER_LEN = 1 << BUFFER_P;
 
 typedef enum {
 	REF_NO_ERROR,
@@ -19,36 +21,33 @@ typedef enum {
 } ref_test_error;
 
 typedef struct {
+	double *window;
 	FILE *outfile;
-	Analyzer *analyzer;
 } ref_state;
 
 typedef std::vector<std::complex<float> > fft_t;
 
 using namespace std;
 
-void process_data (double *data, int count, ref_state *state) ;
+void process_data (double *data, ref_state *state) ;
 
 int main (int argc, char *argv[]) {
-	if (argc != 3) {
-		DEBUG("Usage: ./ref.out <inputfile> <outputfile>")
+	if (argc != 2) {
+		DEBUG("Usage: ./ref.out <outputfile>")
 		return REF_NO_ERROR;
 	}
 
-	char *inpath = argv[1];
-	char *outpath = argv[2];
+	char *outpath = argv[1];
 
 	double data [BUFFER_LEN];
+	double window [BUFFER_LEN];
 
-	SNDFILE *infile;
 	FILE *outfile;
 
-	SF_INFO sfinfo;
-	int readcount;
 	ref_state *state;
 
-	DEBUG("Generating test file `%s` from input data in `%s`",
-		outpath, inpath)
+	DEBUG("Generating test file `%s` from some example data",
+		outpath)
 
 	/*
 		Preparations:
@@ -65,26 +64,9 @@ int main (int argc, char *argv[]) {
 		return REF_ERROR_STATE_ALLOCATION;
 	}
 
-	infile = sf_open(inpath, SFM_READ, &sfinfo);
-
-	if (infile == NULL) {
-		ERROR("Failed to open input file `%s`", inpath)
-
-		return REF_ERROR_FILE_READ;
-	}
-
-	if (sfinfo.channels != 1) {
-		ERROR("Input file `%s` is not mono (has %d channels)",
-			inpath, sfinfo.channels)
-
-		return REF_ERROR_NOT_MONO;
-	}
-
 	outfile = fopen(outpath, "w+");
 
 	if (outfile == NULL) {
-		/* It's probably not a good idea to forget this */
-		sf_close(infile);
 		ERROR("Failed to open output file `%s` for writing",
 			outpath)
 
@@ -93,17 +75,24 @@ int main (int argc, char *argv[]) {
 
 	state->outfile = outfile;
 
-	state->analyzer = new Analyzer(sfinfo.samplerate, "ref_tester");
+	state->window = window;
 
 	/* Let the magic begin */
 
-	while ((readcount = sf_read_double (infile, data, BUFFER_LEN))) {
-		process_data(data, readcount, state);
+	for (int i=0; i<BUFFER_LEN; i++) {
+		window[i] = 1.0;
 	}
+
+	data[0] = 1.0;
+
+	process_data(data, state);
+
+	data[BUFFER_LEN - 1] = 1.0;
+
+	process_data(data, state);
 
 	/* "Always close the files you have opened" yeah yeah... */
 
-	sf_close(infile);
 	fclose(outfile);
 
 	/* Let's get outta here */
@@ -113,16 +102,11 @@ int main (int argc, char *argv[]) {
 	return REF_NO_ERROR;
 }
 
-void process_data (double *data, int count, ref_state *state) {
-	Analyzer *analyzer = state->analyzer;
-
-	analyzer->input<double*>(data, data + count);
-	analyzer->process();
-
-    const fft_t fft = analyzer->getFFT();
-    
-    // FUCK iterators and fuck C++ streams
-    for(int i = 0; i < fft.size(); i++) {
-        fprintf(state->outfile, "(%f, %f)\n", real(fft[i]), imag(fft[i]));
-    }
+void process_data (double *data, ref_state *state) {
+	const fft_t fft = da::fft<BUFFER_P>(data, state->window);
+	
+	// FUCK iterators and fuck C++ streams
+	for(int i = 0; i < BUFFER_LEN; i++) {
+		fprintf(state->outfile, "(%f, %f)\n", real(fft[i]), imag(fft[i]));
+	}
 }
