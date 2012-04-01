@@ -121,6 +121,7 @@ Analyzer.prototype = {
 	fft: null,
 	tones: null,
 	fftLastPhase: null,
+	buffer: null,
 
 	offset: 0,
 
@@ -194,6 +195,8 @@ Analyzer.prototype = {
 			if (data.length < buf.length) break;
 
 			data = data.subarray(i);
+
+			// FIXME: We need to do STFT here instead, use this.step
 
 			this.calcFFT();
 			this.calcTones();
