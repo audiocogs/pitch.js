@@ -1,25 +1,9 @@
 #!/usr/bin/env node
 
-var debug = console.error.bind(console);
-
-var fs = require('fs');
-var Analyzer = require('../../src/pitch.js');
+require('../tools/');
 
 var BUFFER_P = 5;
 var BUFFER_LEN = 1 << BUFFER_P;
-
-function die (code) {
-	debug.apply(null, [].slice.call(arguments, 1));
-	process.exit(code || 0);
-}
-
-function format_float (n) {
-	var s = String(Math.round(n * 1e6));
-	var p = s[0] === '-' ? '-' : '';
-	if (!n) return p + "0.000000";
-	return p + ((n > 0 ? n < 1 : n > -1) ? '0' : '') +
-		s.substring(+!!p, s.length - 6) + '.' + s.substring(s.length - 6);
-}
 
 function process_data (data, window, stream) {
 	var fft = Analyzer.fft(data, window, BUFFER_P);

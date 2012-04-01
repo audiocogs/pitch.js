@@ -1,18 +1,6 @@
 #!/usr/bin/env node
 
-var debug = console.error.bind(console);
-var print = console.log.bind(console);
-
-var fs = require('fs');
-
-function die (code) {
-	debug.apply(null, [].slice.call(arguments, 1));
-	process.exit(code || 0);
-}
-
-function read (path) {
-	return fs.readFileSync(path, 'UTF-8');
-}
+require('./');
 
 var argv = [].slice.call(process.argv);
 

@@ -1,18 +1,10 @@
 #!/usr/bin/env node
 
-var debug = console.error.bind(console);
-var write = console.log.bind(console);
+require('../tools/');
 
-var fs = require('fs');
 var FFT = require('../../src/fft.js');
 
 var BUFFER_LEN = 1024;
-
-function format_float (n) {
-	n = String(n);
-	var i = n.indexOf('.');
-	return (i === -1 ? n + '.000000' : n.substring(0, i + 7)) + Array(i === -1 ? 1 : 7 - n.length + i).join('0');
-}
 
 var data = new Float32Array(BUFFER_LEN);
 data[0] = 1;
@@ -30,5 +22,5 @@ for(var i = 0; i < BUFFER_LEN; i++) {
     var real = spectrum[i*2];
     var imag = spectrum[i*2 + 1];
 
-    write('(' + format_float(real) + ', ' + format_float(imag) +  ')');
+    print('(' + format_float(real) + ', ' + format_float(imag) +  ')');
 }
