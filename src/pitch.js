@@ -73,6 +73,10 @@ Tone.prototype = {
 		return '{freq: ' + this.freq + ', db: ' + this.db + ', stabledb: ' + this.stabledb + ', age: ' + this.age + '}';
 	},
 
+	matches: function (freq) {
+		return abs(this.freq / freq - 1.0) < 0.05;
+	},
+
 	harmonics: null
 };
 
@@ -214,7 +218,7 @@ Analyzer.prototype = {
 		for (i=0, n=0; i<this.tones.length; i++) {
 			while (n < tones.length && tones[n].freq < this.tones[i].freq) n++;
 
-			if (n < tones.length && Math.abs(tones[n].freq - this.tones[i].freq) < maxDiff) {
+			if (n < tones.length && tones[n].matches(this.tones[i].freq)) {
 				tones[n].age = this.tones[i].age + 1;
 				tones[n].stabledb = 0.8 * this.tones[i].stabledb + 0.2 * tones[n].db;
 				tones[n].freq = 0.5 * (this.tones[i].freq + tones[n].freq);
