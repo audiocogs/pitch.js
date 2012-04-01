@@ -118,5 +118,5 @@ void process_data (double *data, int count, ref_state *state) {
 
 	double freq = tone ? tone->freq : 0.0;
 
-	fprintf(state->outfile, "%d %f\n", count, freq);
+	fprintf(state->outfile, "%d\n%f\n", count, freq);
 }

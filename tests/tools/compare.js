@@ -22,9 +22,11 @@ var l = Math.max(file1.length, file2.length);
 var ec = 0;
 
 for (var i=0; i<l; i++) {
-	file1[i] !== file2[i] && print(i, ec++, file1[i], file2[i]);
+	if (file1[i] !== file2[i] && Math.abs(parseFloat(file1[i]) - parseFloat(file2[i])) > 0.000003) {
+		print(i, ec++, file1[i], file2[i]);
+	}
 }
 
 if (ec) die(3, "Comparison failed with", ec, "errors out of", l, "(" + Math.round((l - ec) / l * 100) + "% success rate)");
 
-print("Comparison match!");
+debug("Comparison match!");

@@ -5,19 +5,12 @@ require('../tools/');
 var BUFFER_LEN = 1024;
 
 function process_data (data, analyzer, stream) {
-	stream.write(data.length + ' ');
-	if (data.length !== BUFFER_LEN) {
-		var ddata = new Float32Array(BUFFER_LEN);
-		ddata.set(data);
-		data = ddata;
-	}
-
 	analyzer.input(data);
 	analyzer.process();
 	var tone = analyzer.findTone();
 	var freq = tone ? tone.freq : 0.0;
 
-	stream.write(format_float(freq) + '\n');
+	stream.write(data.length + '\n' + format_float(freq) + '\n');
 }
 
 var argv = [].slice.call(process.argv);
