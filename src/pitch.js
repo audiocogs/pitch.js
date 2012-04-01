@@ -131,6 +131,7 @@ Analyzer.prototype = {
 
 	MIN_FREQ: 50,
 	MAX_FREQ: 5000,
+	MAX_DIFF: 1.3,
 
 	sampleRate: 44100,
 	step: 200,
@@ -206,14 +207,14 @@ Analyzer.prototype = {
 	},
 
 	mergeWithOld: function (tones) {
-		var i, n;
+		var i, n, maxDiff = this.MAX_DIFF;
 
 		tones.sort(function (a, b) { return a.freq > b.freq ? -1 : a.freq < b.freq ? 1 : 0; });
 
 		for (i=0, n=0; i<this.tones.length; i++) {
 			while (n < tones.length && tones[n].freq < this.tones[i].freq) n++;
 
-			if (n < tones.length && Math.abs(tones[n].freq - this.tones[i].freq) < 1.0) {
+			if (n < tones.length && Math.abs(tones[n].freq - this.tones[i].freq) < maxDiff) {
 				tones[n].age = this.tones[i].age + 1;
 				tones[n].stabledb = 0.8 * this.tones[i].stabledb + 0.2 * tones[n].db;
 				tones[n].freq = 0.5 * (this.tones[i].freq + tones[n].freq);
