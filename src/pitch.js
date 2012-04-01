@@ -162,7 +162,7 @@ Analyzer.prototype = {
 
 		for (var i=0; i<this.tones.length; i++) {
 			if (this.tones[i].db < db - 20.0 || this.tones[i].freq < minFreq || this.tones[i].age < Tone.MIN_AGE) continue;
-			if (this.tones[i].freq > maxfreq) break;
+			if (this.tones[i].freq > maxFreq) break;
 
 			var score = this.tones[i].db - max(180.0, abs(this.tones[i].freq - 300)) / 10.0;
 
@@ -208,12 +208,12 @@ Analyzer.prototype = {
 	mergeWithOld: function (tones) {
 		var i, n;
 
-		tones.sort(function (a, b) { return a.freq > b.freq ? 1 : a.freq < b.freq ? -1 : 0; });
+		tones.sort(function (a, b) { return a.freq > b.freq ? -1 : a.freq < b.freq ? 1 : 0; });
 
-		for (i=0; i<this.tones.length; i++) {
+		for (i=0, n=0; i<this.tones.length; i++) {
 			while (n < tones.length && tones[n].freq < this.tones[i].freq) n++;
 
-			if (n < tones.length && tones[n].freq === this.tones[i]) {
+			if (n < tones.length && Math.abs(tones[n].freq - this.tones[i].freq) < 1.0) {
 				tones[n].age = this.tones[i].age + 1;
 				tones[n].stabledb = 0.8 * this.tones[i].stabledb + 0.2 * tones[n].db;
 				tones[n].freq = 0.5 * (this.tones[i].freq + tones[n].freq);
@@ -326,6 +326,7 @@ Analyzer.prototype = {
 		}
 
 		this.mergeWithOld(tones);
+
 		this.tones = tones;
 
 	},
