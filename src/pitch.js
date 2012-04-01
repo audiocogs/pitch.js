@@ -15,7 +15,8 @@ var	pi	= Math.PI,
 	atan2	= Math.atan2,
 	inf	= 1/0,
 	FFT_P	= 10,
-	FFT_N	= 1 << FFT_P;
+	FFT_N	= 1 << FFT_P,
+	BUF_N	= FFT_N * 2;
 
 function round (val) {
 	return ~~(val + (val >= 0 ? 0.5 : -0.5));
@@ -110,6 +111,7 @@ function Analyzer (options) {
 	options = extend(this, options);
 
 	this.data = new Float32Array(FFT_N);
+	this.buffer = new Float32Array(BUF_N);
 	this.fftLastPhase = new Float32Array(FFT_N);
 	if (this.wnd === null) this.wnd = Analyzer.calculateWindow();
 	this.tones = [];
@@ -124,6 +126,8 @@ Analyzer.prototype = {
 	buffer: null,
 
 	offset: 0,
+	bufRead: 0,
+	bufWrite: 0,
 
 	MIN_FREQ: 50,
 	MAX_FREQ: 5000,
@@ -173,36 +177,32 @@ Analyzer.prototype = {
 		return best;
 	},
 
-	process: function (data) {
-		var	o	= this.offset,
-			buf	= this.data,
-			l;
+	input: function (data) {
+		var buf = this.buffer;
+		var r = this.bufRead;
+		var w = this.bufWrite;
 
-		while (true) {
-			l = ((data.length % buf.length) - o) || data.length;
+		var overflow = false;
 
-			for (var i=0; i<l; i++) {
-				var s = data[i];
-				var p = s * s;
+		for (var i=0; i<data.length; i++) {
+			var s = data[i];
+			var p = s * s;
 
-				if (p > this.peak) this.peak = p; else this.peak *= 0.999;
+			if (p > this.peak) this.peak = p; else this.peak *= 0.999;
 
-				buf[o + i] = s;
-			}
+			buf[w] = s;
 
-			o = (o + i) % buf.length;
+			w = (w + 1) % BUF_N;
 
-			if (data.length < buf.length) break;
-
-			data = data.subarray(i);
-
-			// FIXME: We need to do STFT here instead, use this.step
-
-			this.calcFFT();
-			this.calcTones();
+			if (w === r) overflow = true;
 		}
 
-		this.offset = o;
+		this.bufWrite = w;
+		if (overflow) this.bufRead = (w + 1) % BUF_N;
+	},
+
+	process: function (data) {
+		while (this.calcFFT()) this.calcTones();
 	},
 
 	mergeWithOld: function (tones) {
@@ -331,7 +331,19 @@ Analyzer.prototype = {
 	},
 
 	calcFFT: function () {
+		var r = this.bufRead;
+
+		if ((BUF_N + this.bufWrite - r) % BUF_N <= FFT_N) return false;
+
+		for (var i=0; i<FFT_N; i++) {
+			this.data[i] = this.buffer[(r + i) % BUF_N];
+		}
+
+		this.bufRead = (r + this.step) % BUF_N;
+
 		this.fft = Analyzer.fft(this.data, this.wnd, FFT_P);
+
+		return true;
 	},
 };
 

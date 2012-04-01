@@ -29,7 +29,8 @@ function process_data (data, analyzer, stream) {
 		data = ddata;
 	}
 
-	analyzer.process(data);
+	analyzer.input(data);
+	analyzer.process();
 	var tone = analyzer.findTone();
 	var freq = tone ? tone.freq : 0.0;
 
