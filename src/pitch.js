@@ -118,7 +118,7 @@ function Analyzer (options) {
 
 	this.data = new Float32Array(FFT_N);
 	this.buffer = new Float32Array(BUF_N);
-	this.fftLastPhase = new Float32Array(FFT_N / 2);
+	this.fftLastPhase = new Float32Array(BUF_N);
 	if (this.wnd === null) this.wnd = Analyzer.calculateWindow();
 	this.tones = [];
 }
