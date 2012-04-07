@@ -51,9 +51,10 @@ var analyzer = new Analyzer({sampleRate: infile.sampleRate});
 var data;
 
 while (data = infile.readBuffer(BUFFER_LEN)) {
+	updateProgress((infile.dataOffset - infile.dataStart) / (infile.dataEnd - infile.dataStart));
 	process_data(data, analyzer, outfile);
 }
 
 outfile.destroySoon();
 
-debug("Done");
+debug("\nDone");

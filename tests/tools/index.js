@@ -26,3 +26,22 @@ global.read = function (path, encoding) {
 global.write = function (path, data, encoding) {
 	return fs.writeFileSync(path, data, arguments.length === 2 ? 'UTF-8' : encoding);
 };
+
+var ProgressBar;
+
+try {
+	ProgressBar = require('progress-bar');
+} catch (e) {}
+
+var pb;
+
+global.updateProgress = function (value) {
+	if (!ProgressBar) return;
+
+	if (!pb) {
+		pb = ProgressBar.create(process.stderr, 50);
+		pb.format = "$bar; $percentage;% complete.";
+	}
+
+	pb.update(value);
+};
