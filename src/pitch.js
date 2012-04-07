@@ -148,10 +148,6 @@ Analyzer.prototype = {
 		return 10.0 * log10(this.peak);
 	},
 
-	getFFT: function () {
-		return this.fft;
-	},
-
 	findTone: function (minFreq, maxFreq) {
 		if (!this.tones.length) {
 			this.oldFreq = 0.0;
