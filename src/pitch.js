@@ -110,7 +110,7 @@ Peak.match = function (peaks, pos) {
 	if (peaks[pos - 1].db > peaks[best].db) best = pos - 1;
 	if (peaks[pos + 1].db > peaks[best].db) best = pos + 1;
 
-	return peaks[pos];
+	return peaks[best];
 };
 
 function Analyzer (options) {
