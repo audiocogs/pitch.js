@@ -1,6 +1,5 @@
 /*global PitchAnalyzer:true, Float32Array:false, module:false */
 
-
 PitchAnalyzer = this.PitchAnalyzer = (function () {
 
 var	pi	= Math.PI,
@@ -61,6 +60,16 @@ function extend (obj) {
 	return obj;
 }
 
+/**
+ * A class for tones.
+ *
+ * @class
+ * @static PitchAnalyzer
+ * @param default:0.0 min:0.0 type:Number freq The frequency of the tone.
+ * @param default:-Infinity max:0.0 type:Number db The volume of the tone.
+ * @param default:-Infinity max:0.0 type:Number stabledb An average of the volume of the tone.
+ * @param default:0 min:0 type:Integer age How many times the tone has been detected in a row.
+*/
 function Tone () {
 	this.harmonics = new Float32Array(Tone.MAX_HARM);
 }
@@ -75,6 +84,14 @@ Tone.prototype = {
 		return '{freq: ' + this.freq + ', db: ' + this.db + ', stabledb: ' + this.stabledb + ', age: ' + this.age + '}';
 	},
 
+/**
+ * Return an approximation of whether the tone has the same frequency as provided.
+ *
+ * @method Tone
+ * @private
+ * @arg {Number} freq The frequency to compare to.
+ * @return {Boolean} Whether it was a match.
+*/
 	matches: function (freq) {
 		return abs(this.freq / freq - 1.0) < 0.05;
 	},
@@ -85,6 +102,15 @@ Tone.prototype = {
 Tone.MIN_AGE = 2;
 Tone.MAX_HARM = 48;
 
+/**
+ * An internal class to manage the peak frequencies detected.
+ *
+ * @private
+ * @class
+ * @static PitchAnalyzer
+ * @arg default:0.0 min:0.0 type:Number !freq The frequency of the peak.
+ * @arg default:-Infinity max:0.0 type:Number !db The volume of the peak.
+*/
 function Peak (freq, db) {
 	this.freq = typeof freq === 'undefined' ? this.freq : freq;
 	this.db = typeof db === 'undefined' ? this.db : db;
@@ -98,12 +124,27 @@ Peak.prototype = {
 	freq: 0.0,
 	db: -inf,
 
+/**
+ * Resets the peak to default values.
+ *
+ * @method Peak
+ * @private
+*/
 	clear: function () {
 		this.freq	= Peak.prototype.freq;
 		this.db		= Peak.prototype.db;
 	}
 };
 
+/**
+ * Finds the best matching peak from a certain point in the array of peaks.
+ *
+ * @static Peak
+ * @private
+ * @arg {Array} peaks The peaks to search from.
+ * @arg {Integer} pos The position to find the match for.
+ * @return {Peak} The best matching peak.
+*/
 Peak.match = function (peaks, pos) {
 	var best = pos;
 
@@ -113,6 +154,12 @@ Peak.match = function (peaks, pos) {
 	return peaks[best];
 };
 
+/**
+ * A class to analyze pitch from input data.
+ *
+ * @class PitchAnalyzer
+ * @arg {Object} !options Options to override default values.
+*/
 function Analyzer (options) {
 	options = extend(this, options);
 
@@ -144,6 +191,12 @@ Analyzer.prototype = {
 
 	peak: 0.0,
 
+/**
+ * Gets the current peak level in dB (negative value, 0.0 = clipping).
+ *
+ * @method PitchAnalyzer
+ * @return {Number} The current peak level (db).
+*/
 	getPeak: function () {
 		return 10.0 * log10(this.peak);
 	},
@@ -178,6 +231,13 @@ Analyzer.prototype = {
 		return best;
 	},
 
+/**
+ * Copies data to the internal buffers for processing and calculates peak.
+ * Note that if the buffer overflows, unprocessed data gets discarded.
+ *
+ * @method PitchAnalyzer
+ * @arg {Float32Array} data The input data.
+*/
 	input: function (data) {
 		var buf = this.buffer;
 		var r = this.bufRead;
@@ -202,10 +262,21 @@ Analyzer.prototype = {
 		if (overflow) this.bufRead = (w + 1) % BUF_N;
 	},
 
-	process: function (data) {
+/**
+ * Processes available data and calculates tones.
+ *
+ * @method PitchAnalyzer
+*/
+	process: function () {
 		while (this.calcFFT()) this.calcTones();
 	},
 
+/**
+ * Matches new tones against old ones, merging similar ones.
+ *
+ * @method PitchAnalyzer
+ * @private
+*/
 	mergeWithOld: function (tones) {
 		var i, n;
 
@@ -227,6 +298,12 @@ Analyzer.prototype = {
 		}
 	},
 
+/**
+ * Calculates the tones from the FFT data.
+ *
+ * @method PitchAnalyzer
+ * @private
+*/
 	calcTones: function () {
 		var	freqPerBin	= this.sampleRate / FFT_N,
 			phaseStep	= pi2 * this.step / FFT_N,
@@ -328,6 +405,13 @@ Analyzer.prototype = {
 		this.tones = tones;
 	},
 
+/**
+ * Calculates the FFT for the input signal, if enough is available.
+ *
+ * @method PitchAnalyzer
+ * @private
+ * @return {Boolean} Whether there was enough data to process.
+*/
 	calcFFT: function () {
 		var r = this.bufRead;
 
@@ -351,6 +435,12 @@ Analyzer.mapdb = function (e) {
 
 Analyzer.Tone = Tone;
 
+/**
+ * Calculates a Hamming window for the size FFT_N.
+ *
+ * @static PitchAnalyzer
+ * @return {Float32Array} The hamming window.
+*/
 Analyzer.calculateWindow = function () {
 	var i, w = new Float32Array(FFT_N);
 
@@ -361,6 +451,16 @@ Analyzer.calculateWindow = function () {
 	return w;
 };
 
+/**
+ * Calculates the RFFT for input data of the size 1 << P.
+ *
+ * @static PitchAnalyzer
+ * @private
+ * @arg {Float32Array} inData The data to process.
+ * @arg {Float32Array} wnd The window to apply to the data.
+ * @arg {Integer} P The size of the input data.
+ * @return {Float32Array} The FFT data.
+*/
 Analyzer.fft = function (inData, wnd, P) { //return;
 	var N = 1 << P;
 	var data = new Float32Array(N<<1);
@@ -378,6 +478,14 @@ Analyzer.fft = function (inData, wnd, P) { //return;
 	return data;
 };
 
+/**
+ * Runs the butterfly part of the transform on the data.
+ *
+ * @static PitchAnalyzer
+ * @private
+ * @arg {Float32Array} data The bit reversal sorted data.
+ * @arg {Integer} P The size of the input data as length = 2 << P.
+*/
 Analyzer.DanielsonLanczos = function (data, P) {
 	if (!P) return;
 
