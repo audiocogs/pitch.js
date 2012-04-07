@@ -46,3 +46,4 @@ clean:
 	rm -rf $(REF_TARGET) $(REF_FFT_TARGET) *.data */*.data */*/*.data *.test */*.test */*/*.test
 
 .PHONY: all clean
+.SECONDARY:
