@@ -52,6 +52,10 @@ data[BUFFER_LEN-1] = 1;
 
 process_data(data, wnd, outfile);
 
+data[BUFFER_LEN/2] = 0.5;
+
+process_data(data, wnd, outfile);
+
 outfile.destroySoon();
 
 debug("Done");

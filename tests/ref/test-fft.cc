@@ -91,6 +91,10 @@ int main (int argc, char *argv[]) {
 
 	process_data(data, state);
 
+	data[BUFFER_LEN/2] = 0.5;
+
+	process_data(data, state);
+
 	/* "Always close the files you have opened" yeah yeah... */
 
 	fclose(outfile);
