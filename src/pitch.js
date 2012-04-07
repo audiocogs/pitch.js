@@ -214,7 +214,7 @@ Analyzer.prototype = {
 	mergeWithOld: function (tones) {
 		var i, n;
 
-		tones.sort(function (a, b) { return a.freq > b.freq ? -1 : a.freq < b.freq ? 1 : 0; });
+		tones.sort(function (a, b) { return a.freq < b.freq ? -1 : a.freq > b.freq ? 1 : 0; });
 
 		for (i=0, n=0; i<this.tones.length; i++) {
 			while (n < tones.length && tones[n].freq < this.tones[i].freq) n++;
@@ -228,7 +228,7 @@ Analyzer.prototype = {
 				t.freq = this.tones[i].freq;
 				t.db = this.tones[i].db - 5.0;
 				t.stabledb = this.tones[i].stabledb - 0.1;
-				tones.push(t);
+				tones.splice(n, 0, t);
 			}
 
 		}
