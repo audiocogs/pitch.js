@@ -1,3 +1,6 @@
+/*global PitchAnalyzer:true, Float32Array:false, module:false */
+
+
 PitchAnalyzer = this.PitchAnalyzer = (function () {
 
 var	pi	= Math.PI,
@@ -11,7 +14,6 @@ var	pi	= Math.PI,
 	abs	= Math.abs,
 	LN10	= Math.LN10,
 	sqrt	= Math.sqrt,
-	atan	= Math.atan,
 	atan2	= Math.atan2,
 	inf	= 1/0,
 	FFT_P	= 10,
