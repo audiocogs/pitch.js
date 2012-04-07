@@ -99,7 +99,7 @@ Peak.prototype = {
 	clear: function () {
 		this.freq	= Peak.prototype.freq;
 		this.db		= Peak.prototype.db;
-	},
+	}
 };
 
 Peak.match = function (peaks, pos) {
@@ -234,18 +234,19 @@ Analyzer.prototype = {
 	},
 
 	calcTones: function () {
-		var	tones		= this.tones,
-			freqPerBin	= this.sampleRate / FFT_N,
+		var	freqPerBin	= this.sampleRate / FFT_N,
 			phaseStep	= pi2 * this.step / FFT_N,
 			normCoeff	= 1.0 / FFT_N,
 			minMagnitude	= pow(10, -100.0 / 20.0) / normCoeff,
 			kMin		= ~~max(1, this.MIN_FREQ / freqPerBin),
 			kMax		= ~~min(FFT_N / 2, this.MAX_FREQ / freqPerBin),
 			peaks		= [],
-			k, magnitude, phase, delta, freq, prevdb, db;
+			tones		= [],
+			k, p, n, t, count, freq, magnitude, phase, delta, prevdb, db, bestDiv,
+			bestScore, div, score;
 
 		for (k=0; k < kMax + 1; k++) {
-			peaks.push(new Peak);
+			peaks.push(new Peak());
 		}
 
 		for (k=1; k<=kMax; k++) {
@@ -276,21 +277,19 @@ Analyzer.prototype = {
 			prevdb = db;
 		}
 
-		var tones = [];
-
 		for (k=kMax-1; k >= kMin; k--) {
 			if (peaks[k].db < -70.0) continue;
 
-			var bestDiv = 1;
-			var bestScore = 0;
+			bestDiv = 1;
+			bestScore = 0;
 
-			for (var div = 2; div <= Tone.MAX_HARM && k / div > 1; div++) {
-				var freq = peaks[k].freq / div;
-				var score = 0;
-				for (var n=1; n<div && n<8; n++) {
-					var p = Peak.match(peaks, ~~(k * n / div));
+			for (div = 2; div <= Tone.MAX_HARM && k / div > 1; div++) {
+				freq = peaks[k].freq / div;
+				score = 0;
+				for (n=1; n<div && n<8; n++) {
+					p = Peak.match(peaks, ~~(k * n / div));
 					score--;
-					if (p.db < -90.0 || abs(p.freq / n / freq - 1.0) > .03) continue;
+					if (p.db < -90.0 || abs(p.freq / n / freq - 1.0) > 0.03) continue;
 					if (n === 1) score += 4;
 					score += 2;
 				}
@@ -300,18 +299,18 @@ Analyzer.prototype = {
 				}
 			}
 
-			var t = new Tone;
+			t = new Tone();
 
-			var count = 0;
+			count = 0;
 
-			var freq = peaks[k].freq / bestDiv;
+			freq = peaks[k].freq / bestDiv;
 
 			t.db = peaks[k].db;
 
-			for (var n=1; n<=bestDiv; n++) {
-				var p = Peak.match(peaks, ~~(k * n / bestDiv));
+			for (n=1; n<=bestDiv; n++) {
+				p = Peak.match(peaks, ~~(k * n / bestDiv));
 
-				if (abs(p.freq / n / freq - 1.0) > .03) continue;
+				if (abs(p.freq / n / freq - 1.0) > 0.03) continue;
 
 				if (p.db > t.db - 10.0) {
 					t.db = max(t.db, p.db);
@@ -350,7 +349,7 @@ Analyzer.prototype = {
 		this.fft = Analyzer.fft(this.data, this.wnd, FFT_P);
 
 		return true;
-	},
+	}
 };
 
 Analyzer.mapdb = function (e) {
