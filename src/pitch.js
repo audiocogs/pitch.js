@@ -118,7 +118,7 @@ function Analyzer (options) {
 
 	this.data = new Float32Array(FFT_N);
 	this.buffer = new Float32Array(BUF_N);
-	this.fftLastPhase = new Float32Array(FFT_N);
+	this.fftLastPhase = new Float32Array(FFT_N / 2);
 	if (this.wnd === null) this.wnd = Analyzer.calculateWindow();
 	this.tones = [];
 }
@@ -140,7 +140,6 @@ Analyzer.prototype = {
 
 	sampleRate: 44100,
 	step: 200,
-	lastPhase: FFT_N / 2,
 	oldFreq: 0.0,
 
 	peak: 0.0,
