@@ -6,12 +6,7 @@ global.Analyzer = require('../../src/pitch.js');
 global.WavReader = require('./wavreader.js');
 
 global.format_float = function (n) {
-	var s = String(Math.round(n * 1e6));
-	var p = s[0] === '-' ? '-' : '';
-	if (!n) return p + "0.000000";
-	s = p ? s.substring(1) : s; 
-	s = ((n > 0 ? n < 1 : n > -1) ? '0' : '') ? '0' + s : s;
-	return p + s.substring(0, s.length - 6) + '.' + s.substring(s.length - 6);
+	return n.toFixed(6);
 };
 
 global.die = function (code) {
