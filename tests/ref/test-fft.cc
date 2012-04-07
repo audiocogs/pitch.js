@@ -107,6 +107,6 @@ void process_data (double *data, ref_state *state) {
 	
 	// FUCK iterators and fuck C++ streams
 	for(int i = 0; i < BUFFER_LEN; i++) {
-		fprintf(state->outfile, "%i\n%f\n%f\n", i, real(fft[i]), imag(fft[i]));
+		fprintf(state->outfile, "%f\n%f\n", real(fft[i]), imag(fft[i]));
 	}
 }

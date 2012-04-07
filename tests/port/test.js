@@ -10,7 +10,7 @@ function process_data (data, analyzer, stream) {
 	var tone = analyzer.findTone();
 	var freq = tone ? tone.freq : 0.0;
 
-	stream.write(data.length + '\n' + format_float(freq) + '\n');
+	stream.write(format_float(freq) + '\n');
 }
 
 var argv = [].slice.call(process.argv);

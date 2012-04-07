@@ -12,7 +12,7 @@ function process_data (data, window, stream) {
 		var real = fft[i];
 		var imag = fft[i + 1];
 
-		stream.write((i/2) + '\n' + format_float(real) + '\n' + format_float(imag) + '\n');
+		stream.write(format_float(real) + '\n' + format_float(imag) + '\n');
 	}
 }
 
