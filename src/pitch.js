@@ -219,11 +219,9 @@ Analyzer.prototype = {
 				tones[n].stabledb = 0.8 * this.tones[i].stabledb + 0.2 * tones[n].db;
 				tones[n].freq = 0.5 * (this.tones[i].freq + tones[n].freq);
 			} else if (this.tones[i].db > -80.0) {
-				var t = new Tone(this.tones[i].db, this.tones[i].freq);
-				t.freq = this.tones[i].freq;
-				t.db = this.tones[i].db - 5.0;
-				t.stabledb = this.tones[i].stabledb - 0.1;
-				tones.splice(n, 0, t);
+				tones.splice(n, 0, this.tones[i]);
+				tones[n].db -= 5.0;
+				tones[n].stabledb -= 0.1;
 			}
 
 		}
