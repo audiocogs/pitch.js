@@ -269,7 +269,7 @@ Analyzer.prototype = {
 			}
 		}
 
-		prevdb = peaks[0];
+		prevdb = peaks[0].db;
 
 		for (k=1; k<kMax; k++) {
 			db = peaks[k].db;
@@ -333,7 +333,6 @@ Analyzer.prototype = {
 		this.mergeWithOld(tones);
 
 		this.tones = tones;
-
 	},
 
 	calcFFT: function () {
