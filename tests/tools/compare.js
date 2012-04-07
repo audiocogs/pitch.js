@@ -23,7 +23,7 @@ var ec = 0;
 
 for (var i=0; i<l; i++) {
 	if (file1[i] !== file2[i] && Math.abs(parseFloat(file1[i]) - parseFloat(file2[i])) > 0.000003) {
-		print(i, ec++, file1[i], file2[i]);
+		print(i+1, ec++, file1[i], file2[i]);
 	}
 }
 
