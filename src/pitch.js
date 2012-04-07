@@ -141,7 +141,7 @@ Analyzer.prototype = {
 	sampleRate: 44100,
 	step: 200,
 	lastPhase: FFT_N / 2,
-	oldFreq: null,
+	oldFreq: 0.0,
 
 	peak: 0.0,
 
