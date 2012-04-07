@@ -6,14 +6,14 @@ REF_FFT_TARGET := $(TESTDIR)/ref/fft.out
 PORT_SOURCE := src/pitch.js $(TESTDIR)/tools/wavreader.js
 REF_SOURCE := $(TESTDIR)/ref/pitch.cc $(TESTDIR)/ref/test.cc
 REF_FFT_SOURCE := $(TESTDIR)/ref/test-fft.cc
+WAVTESTS := $(patsubst %.wav,%.test,$(wildcard *.wav))
 
 COMPARE := $(TESTDIR)/tools/compare.js
 CXX := g++
 
 CXX_FLAGS := -Wall -lm -lsndfile
 
-all: fft.test
-	@for i in *.wav; do make $${i:0:-4}.test; done
+all: fft.test $(WAVTESTS)
 
 $(REF_TARGET): $(REF_SOURCE)
 	$(CXX) $(CXX_FLAGS) $^ -o $@
