@@ -44,8 +44,9 @@ var l = Math.max(file1.length, file2.length);
 var ec = 0;
 
 for (var i=0; i<l; i++) {
-	if (file1[i] !== file2[i] && Math.abs(parseFloat((file1[i]) -
-		parseFloat(file2[i])) / parseFloat(file1[i])) > options.epsilon) {
+	if (file1[i] !== file2[i] && (Math.abs(parseFloat((file1[i]) -
+		parseFloat(file2[i])) / parseFloat(file1[i])) > options.epsilon ||
+		typeof file1[i] === 'undefined' || typeof file2[i] === 'undefined')) {
 		print(i+1, ec++, file1[i], file2[i]);
 	}
 }
