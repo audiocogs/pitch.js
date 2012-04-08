@@ -33,8 +33,8 @@ if (argv.length !== 4) {
 var file1, file2;
 
 try {
-	file1 = read(argv[2]).split('\n');
-	file2 = read(argv[3]).split('\n');
+	file1 = read(argv[2]).trimRight().split('\n');
+	file2 = read(argv[3]).trimRight().split('\n');
 } catch (e) {
 	die(2, "Error reading file", file1 ? argv[2] : argv[1]);
 }
@@ -44,9 +44,11 @@ var l = Math.max(file1.length, file2.length);
 var ec = 0;
 
 for (var i=0; i<l; i++) {
-	if (file1[i] !== file2[i] && (Math.abs(parseFloat((file1[i]) -
-		parseFloat(file2[i])) / parseFloat(file1[i])) > options.epsilon ||
-		typeof file1[i] === 'undefined' || typeof file2[i] === 'undefined')) {
+	var f1 = parseFloat(file1[i]);
+	var f2 = parseFloat(file2[i]);
+
+	if (file1[i] !== file2[i] && (isNaN(f1) || isNaN(f2) ||
+		Math.abs((f1 - f2) / f1) > options.epsilon)) {
 		print(i+1, ec++, file1[i], file2[i]);
 	}
 }
