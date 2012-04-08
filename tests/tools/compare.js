@@ -4,8 +4,24 @@ require('./');
 
 var argv = [].slice.call(process.argv);
 
+var options = {
+	errorTolerance: 0.0
+};
+
+detectFlags: while (argv[2][0] === '-') {
+	switch (argv[2]) {
+	case "-et":
+	case "--error-tolerance":
+		options.errorTolerance = parseFloat(argv[3]);
+		argv.splice(2, 2);
+		break;
+	default:
+		break detectFlags;
+	}
+}
+
 if (argv.length !== 4) {
-	die(1, "Usage: compare.js <file1> <file2>");
+	die(1, "Usage: compare.js [flags] <file1> <file2>");
 }
 
 var file1, file2;
@@ -27,6 +43,17 @@ for (var i=0; i<l; i++) {
 	}
 }
 
-if (ec) die(3, "Comparison failed with", ec, "errors out of", l, "(" + Math.round((l - ec) / l * 100) + "% success rate)");
+var er = (l - ec) / l;
+
+if (ec) {
+	if (1.0 - er <= options.errorTolerance) {
+		debug("Comparison passed with", ec, "errors out of", l,
+			"(" + Math.round(er * 100) + "% success rate,",
+			Math.round(options.errorTolerance * 100) + "% error tolerance)");
+	} else {
+		die(3, "Comparison failed with", ec, "errors out of", l,
+			"(" + Math.round(er * 100) + "% success rate)");
+	}
+}
 
 debug("Comparison match!");
