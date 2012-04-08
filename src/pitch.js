@@ -135,7 +135,7 @@ Analyzer.prototype = {
 	bufRead: 0,
 	bufWrite: 0,
 
-	MIN_FREQ: 50,
+	MIN_FREQ: 45,
 	MAX_FREQ: 5000,
 
 	sampleRate: 44100,
