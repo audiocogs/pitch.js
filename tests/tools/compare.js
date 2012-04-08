@@ -5,7 +5,8 @@ require('./');
 var argv = [].slice.call(process.argv);
 
 var options = {
-	errorTolerance: 0.0
+	errorTolerance: 0.0,
+	epsilon: 0.004
 };
 
 detectFlags: while (argv[2][0] === '-') {
@@ -13,6 +14,11 @@ detectFlags: while (argv[2][0] === '-') {
 	case "-et":
 	case "--error-tolerance":
 		options.errorTolerance = parseFloat(argv[3]);
+		argv.splice(2, 2);
+		break;
+	case "-e":
+	case "--epsilon":
+		options.epsilon = parseFloat(argv[3]);
 		argv.splice(2, 2);
 		break;
 	default:
@@ -38,7 +44,8 @@ var l = Math.max(file1.length, file2.length);
 var ec = 0;
 
 for (var i=0; i<l; i++) {
-	if (file1[i] !== file2[i] && Math.abs(parseFloat(file1[i]) - parseFloat(file2[i])) > 0.000003) {
+	if (file1[i] !== file2[i] && Math.abs(parseFloat((file1[i]) -
+		parseFloat(file2[i])) / parseFloat(file1[i])) > options.epsilon) {
 		print(i+1, ec++, file1[i], file2[i]);
 	}
 }
