@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <sndfile.h>
+#include <string.h>
 
 #define BUFFER_LEN 1024
 #define DEBUG(...) { fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n"); }
@@ -76,15 +77,17 @@ int main (int argc, char *argv[]) {
 		return REF_ERROR_NOT_MONO;
 	}
 
-	outfile = fopen(outpath, "w+");
+	if (strcmp(outpath, "-")) {
+		outfile = fopen(outpath, "w+");
 
-	if (outfile == NULL) {
-		/* It's probably not a good idea to forget this */
-		sf_close(infile);
-		ERROR("Failed to open output file `%s` for writing",
-			outpath)
+		if (outfile == NULL) {
+			ERROR("Failed to open output file `%s` for writing",
+				outpath)
 
-		return REF_ERROR_FILE_WRITE;
+			return REF_ERROR_FILE_WRITE;
+		}
+	} else {
+		outfile = stdout;
 	}
 
 	state->outfile = outfile;

@@ -30,10 +30,7 @@ debug("Generating test file `", outpath, "` from some example data");
 var outfile;
 
 try {
-	outfile = fs.createWriteStream(outpath, {
-		encoding: 'UTF-8',
-		flags: 'w+'
-	});
+	outfile = openWriteStream(outpath);
 } catch (e) {
 	die(2, "Couldn't open file `", outpath, "` for writing");
 }

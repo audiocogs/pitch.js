@@ -38,10 +38,7 @@ if (infile.channelCount !== 1) {
 }
 
 try {
-	outfile = fs.createWriteStream(outpath, {
-		encoding: 'UTF-8',
-		flags: 'w+'
-	});
+	outfile = openWriteStream(outpath);
 } catch (e) {
 	die(4, "Couldn't open file `", outpath, "` for writing");
 }

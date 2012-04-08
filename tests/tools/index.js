@@ -40,3 +40,12 @@ global.updateProgress = function (value) {
 
 	pb.update(value);
 };
+
+global.openWriteStream = function (path) {
+	return path === '-' ? process.stdout : fs.createWriteStream(path, {
+		encoding: 'UTF-8',
+		flags: 'w+'
+	});
+};
+
+process.stdout.destroySoon = process.stdout.destroy = function () {};

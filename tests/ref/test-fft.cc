@@ -4,6 +4,7 @@
 #include <vector>
 #include <complex>
 #include <iostream>
+#include <string.h>
 
 #define DEBUG(...) { fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n"); }
 #define ERROR(...) { fprintf(stderr, "ERROR: "); fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n"); }
@@ -64,13 +65,17 @@ int main (int argc, char *argv[]) {
 		return REF_ERROR_STATE_ALLOCATION;
 	}
 
-	outfile = fopen(outpath, "w+");
+	if (strcmp(outpath, "-")) {
+		outfile = fopen(outpath, "w+");
 
-	if (outfile == NULL) {
-		ERROR("Failed to open output file `%s` for writing",
-			outpath)
+		if (outfile == NULL) {
+			ERROR("Failed to open output file `%s` for writing",
+				outpath)
 
-		return REF_ERROR_FILE_WRITE;
+			return REF_ERROR_FILE_WRITE;
+		}
+	} else {
+		outfile = stdout;
 	}
 
 	state->outfile = outfile;
