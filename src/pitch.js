@@ -1,6 +1,5 @@
 /*global PitchAnalyzer:true, Float32Array:false, module:false */
 
-
 PitchAnalyzer = this.PitchAnalyzer = (function () {
 
 var	pi	= Math.PI,
@@ -119,8 +118,9 @@ function Analyzer (options) {
 	this.data = new Float32Array(FFT_N);
 	this.buffer = new Float32Array(BUF_N);
 	this.fftLastPhase = new Float32Array(BUF_N);
-	if (this.wnd === null) this.wnd = Analyzer.calculateWindow();
 	this.tones = [];
+
+	if (this.wnd === null) this.wnd = Analyzer.calculateWindow();
 }
 
 Analyzer.prototype = {
@@ -239,7 +239,7 @@ Analyzer.prototype = {
 			k, p, n, t, count, freq, magnitude, phase, delta, prevdb, db, bestDiv,
 			bestScore, div, score;
 
-		for (k=0; k < kMax + 1; k++) {
+		for (k=0; k <= kMax; k++) {
 			peaks.push(new Peak());
 		}
 
@@ -280,6 +280,7 @@ Analyzer.prototype = {
 			for (div = 2; div <= Tone.MAX_HARM && k / div > 1; div++) {
 				freq = peaks[k].freq / div;
 				score = 0;
+
 				for (n=1; n<div && n<8; n++) {
 					p = Peak.match(peaks, ~~(k * n / div));
 					score--;
@@ -287,6 +288,7 @@ Analyzer.prototype = {
 					if (n === 1) score += 4;
 					score += 2;
 				}
+
 				if (score > bestScore) {
 					bestScore = score;
 					bestDiv = div;
@@ -311,6 +313,7 @@ Analyzer.prototype = {
 					count++;
 					t.freq += p.freq / n;
 				}
+
 				t.harmonics[n - 1] = p.db;
 				p.clear();
 			}
