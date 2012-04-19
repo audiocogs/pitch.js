@@ -31,6 +31,10 @@ if (tone === null) {
  * The ```audioBuffer``` must be mono.
  * The internal buffer is 4096 samples long, so if you input more than that without processing in between, you might get incorrect results.
 
+### Authors
+
+pitch.js is brought to you by [Official.fm Labs](http://labs.official.fm). Please see [./docs/AUTHORS.md](docs/AUTHORS.md) for more details.
+
 ## License
 
-Sorry, for now you aren't allowed to read the code or use it because we aren't sure what license we should use for it. Tough luck! :(
+This code is ported from original C++ code by Lasse Kärkkäinen, hence licensed under GPLv2, as is the original. Please see [./docs/LICENSE.txt](docs/LICENSE.txt) for further information.
