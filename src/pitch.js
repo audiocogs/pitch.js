@@ -14,33 +14,14 @@ var	pi	= Math.PI,
 	LN10	= Math.LN10,
 	sqrt	= Math.sqrt,
 	atan2	= Math.atan2,
+	round	= Math.round,
 	inf	= 1/0,
 	FFT_P	= 10,
 	FFT_N	= 1 << FFT_P,
 	BUF_N	= FFT_N * 2;
 
-function round (val) {
-	return ~~(val + (val >= 0 ? 0.5 : -0.5));
-}
-
 function remainder (val, div) {
 	return val - round(val/div) * div;
-}
-
-function cabs (b, i) {
-	return sqrt(b[i] * b[i] + b[i+1] * b[i+1]);
-}
-
-function carg (b, i) {
-	return atan2(b[i+1], b[i]);
-}
-
-function square (n) {
-	return n * n;
-}
-
-function log10 (n) {
-	return log(n) / LN10;
 }
 
 function extend (obj) {
@@ -199,7 +180,7 @@ Analyzer.prototype = {
  * @return {Number} The current peak level (db).
 */
 	getPeak: function () {
-		return 10.0 * log10(this.peak);
+		return 10.0 * log(this.peak) / LN10;
 	},
 
 	findTone: function (minFreq, maxFreq) {
@@ -314,16 +295,18 @@ Analyzer.prototype = {
 			kMax		= ~~min(FFT_N / 2, this.MAX_FREQ / freqPerBin),
 			peaks		= [],
 			tones		= [],
-			k, p, n, t, count, freq, magnitude, phase, delta, prevdb, db, bestDiv,
+			k, k2, p, n, t, count, freq, magnitude, phase, delta, prevdb, db, bestDiv,
 			bestScore, div, score;
 
 		for (k=0; k <= kMax; k++) {
 			peaks.push(new Peak());
 		}
 
-		for (k=1; k<=kMax; k++) {
-			magnitude = cabs(this.fft, k*2);
-			phase = carg(this.fft, k*2);
+		for (k=1, k2=2; k<=kMax; k++, k2 += 2) {
+			/* complex absolute */
+			magnitude = sqrt(this.fft[k2] * this.fft[k2] + this.fft[k2+1] * this.fft[k2+1]);
+			/* complex arguscosine */
+			phase = atan2(this.fft[k2+1], this.fft[k2]);
 
 			delta = phase - this.fftLastPhase[k];
 			this.fftLastPhase[k] = phase;
@@ -336,7 +319,7 @@ Analyzer.prototype = {
 
 			if (freq > 1.0 && magnitude > minMagnitude) {
 				peaks[k].freq = freq;
-				peaks[k].db = 20.0 * log10(normCoeff * magnitude);
+				peaks[k].db = 20.0 * log(normCoeff * magnitude) / LN10;
 			}
 		}
 
@@ -499,7 +482,8 @@ Analyzer.DanielsonLanczos = function (data, P) {
 	Analyzer.DanielsonLanczos(data, P - 1);
 	Analyzer.DanielsonLanczos(data.subarray(M * 2), P - 1);
 
-	var wp_r = -2.0 * square(sin(pi / N));
+	var wp_r = sin(pi / N);
+	wp_r *= wp_r * -2.0;
 	var wp_i = -sin(pi2 / N);
 
 	var w_r = 1.0;
