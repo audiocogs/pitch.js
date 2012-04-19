@@ -9,7 +9,7 @@ pitch.js ships one namespace, called ```PitchAnalyzer``` from which all the func
 ```javascript
 
 /* Create a new pitch detector */
-var pitch = new PitchDetector(sampleRate);
+var pitch = new PitchAnalyzer(sampleRate);
 
 /* Copy samples to the internal buffer */
 pitch.input(audioBuffer);
