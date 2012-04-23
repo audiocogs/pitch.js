@@ -150,6 +150,7 @@ function Analyzer (options) {
 	this.tones = [];
 
 	if (this.wnd === null) this.wnd = Analyzer.calculateWindow();
+	this.setupFFT();
 }
 
 Analyzer.prototype = {
@@ -410,9 +411,37 @@ Analyzer.prototype = {
 
 		this.bufRead = (r + this.step) % BUF_N;
 
-		this.fft = Analyzer.fft(this.data, this.wnd, FFT_P);
+		this.processFFT(this.data, this.wnd);
 
 		return true;
+	},
+
+	setupFFT: function () {
+		var RFFT = typeof FFT !== 'undefined' && FFT;
+
+		if (!RFFT) {
+			try {
+				RFFT = require('fft');
+			} catch (e) {
+				throw Error("pitch.js requires fft.js");
+			}
+		}
+
+		RFFT = RFFT.RealFFT;
+
+		this.rfft = new RFFT(FFT_N);
+		this.fft = new Float32Array(FFT_N + 2);
+		this.fftInput = new Float32Array(FFT_N);
+	},
+
+	processFFT: function (data, wnd) {
+		var i, n;
+
+		for (i=0; i<data.length; i++) {
+			this.fftInput[i] = data[i] * wnd[i];
+		}
+
+		this.rfft.process(this.fft, this.fftInput);
 	}
 };
 
@@ -423,90 +452,22 @@ Analyzer.mapdb = function (e) {
 Analyzer.Tone = Tone;
 
 /**
- * Calculates a Hamming window for the size FFT_N.
+ * Calculates a Hamming window for the size FFT_N, scaled up with FFT_N.
  *
  * @static PitchAnalyzer
  * @return {Float32Array} The hamming window.
 */
 Analyzer.calculateWindow = function () {
-	var i, w = new Float32Array(FFT_N);
+	var	i,
+		w = new Float32Array(FFT_N),
+		N = sqrt(FFT_N);
 
 	for (i=0; i<FFT_N; i++) {
 		w[i] = 0.53836 - 0.46164 * cos(pi2 * i / (FFT_N - 1));
+		w[i] *= N;
 	}
 
 	return w;
-};
-
-/**
- * Calculates the RFFT for input data of the size 1 << P.
- *
- * @static PitchAnalyzer
- * @private
- * @arg {Float32Array} inData The data to process.
- * @arg {Float32Array} wnd The window to apply to the data.
- * @arg {Integer} P The size of the input data.
- * @return {Float32Array} The FFT data.
-*/
-Analyzer.fft = function (inData, wnd, P) { //return;
-	var N = 1 << P;
-	var data = new Float32Array(N<<1);
-	var M = N / 2;
-	var m = M;
-
-	for (var i=0, j=0; i<N; i++, m=M) {
-		data[j*2] = inData[i] * wnd[i];
-		while (m > 1 && m <= j) { j -= m; m >>= 1; }
-		j += m;
-	}
-
-	Analyzer.DanielsonLanczos(data, P);
-
-	return data;
-};
-
-/**
- * Runs the butterfly part of the transform on the data.
- *
- * @static PitchAnalyzer
- * @private
- * @arg {Float32Array} data The bit reversal sorted data.
- * @arg {Integer} P The size of the input data as length = 2 << P.
-*/
-Analyzer.DanielsonLanczos = function (data, P) {
-	if (!P) return;
-
-	var N = 1 << P;
-	var M = N / 2;
-
-	Analyzer.DanielsonLanczos(data, P - 1);
-	Analyzer.DanielsonLanczos(data.subarray(M * 2), P - 1);
-
-	var wp_r = sin(pi / N);
-	wp_r *= wp_r * -2.0;
-	var wp_i = -sin(pi2 / N);
-
-	var w_r = 1.0;
-	var w_i = 0.0;
-
-	for (var i=0; i<M; i++) {
-		var n = 2 * (i + M);
-
-		var temp_r = data[n + 0] * w_r - data[n + 1] * w_i;
-		var temp_i = data[n + 0] * w_i + data[n + 1] * w_r;
-
-		data[n + 0] = data[i * 2 + 0] - temp_r;
-		data[n + 1] = data[i * 2 + 1] - temp_i;
-
-		data[i * 2 + 0] += temp_r;
-		data[i * 2 + 1] += temp_i;
-
-		var ww_r = w_r * wp_r - w_i * wp_i;
-		var ww_i = w_r * wp_i + w_i * wp_r;
-
-		w_r += ww_r;
-		w_i += ww_i;
-	}
 };
 
 return Analyzer;
