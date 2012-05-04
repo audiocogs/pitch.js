@@ -31,6 +31,7 @@ if (argv.length !== 4) {
 }
 
 var file1, file2;
+var total = 0;
 
 try {
 	file1 = read(argv[2]).trimRight().split('\n');
@@ -46,14 +47,19 @@ var ec = 0;
 for (var i=0; i<l; i++) {
 	var f1 = parseFloat(file1[i]);
 	var f2 = parseFloat(file2[i]);
+	var e = Math.abs((f1 - f2) / f1);
 
-	if (file1[i] !== file2[i] && (isNaN(f1) || isNaN(f2) ||
-		Math.abs((f1 - f2) / f1) > options.epsilon)) {
+	if (file1[i] !== file2[i] && (isNaN(f1) || isNaN(f2) || e > options.epsilon)) {
 		print(i+1, ec++, file1[i], file2[i]);
 	}
+
+	total += file1[i] === file2[i] ? 0.0 : Math.abs(e) === Infinity ||
+		isNaN(e) ? 1.0 : e;
 }
 
 var er = (l - ec) / l;
+
+debug('Average error:', format_float(total / l));
 
 if (ec) {
 	if (1.0 - er <= options.errorTolerance) {
