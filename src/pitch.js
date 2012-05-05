@@ -427,10 +427,10 @@ Analyzer.prototype = {
 			}
 		}
 
-		RFFT = RFFT.RealFFT;
+		RFFT = RFFT.complex;
 
-		this.rfft = new RFFT(FFT_N);
-		this.fft = new Float32Array(FFT_N + 2);
+		this.rfft = new RFFT(FFT_N, false);
+		this.fft = new Float32Array(FFT_N * 2);
 		this.fftInput = new Float32Array(FFT_N);
 	},
 
@@ -441,7 +441,7 @@ Analyzer.prototype = {
 			this.fftInput[i] = data[i] * wnd[i];
 		}
 
-		this.rfft.process(this.fft, this.fftInput);
+		this.rfft.simple(this.fft, this.fftInput, 'real');
 	}
 };
 
@@ -459,12 +459,10 @@ Analyzer.Tone = Tone;
 */
 Analyzer.calculateWindow = function () {
 	var	i,
-		w = new Float32Array(FFT_N),
-		N = sqrt(FFT_N);
+		w = new Float32Array(FFT_N);
 
 	for (i=0; i<FFT_N; i++) {
 		w[i] = 0.53836 - 0.46164 * cos(pi2 * i / (FFT_N - 1));
-		w[i] *= N;
 	}
 
 	return w;
