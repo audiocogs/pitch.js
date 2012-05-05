@@ -4,6 +4,8 @@ pitch.js is a pitch detection library written in JavaScript. It is based on the 
 
 ## Usage
 
+For pitch.js to work, you'll also need to include [fft.js](https://github.com/JensNockert/fft.js).
+
 pitch.js ships one namespace, called ```PitchAnalyzer``` from which all the functionality is available:
 
 ```javascript
