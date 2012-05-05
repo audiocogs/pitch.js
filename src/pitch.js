@@ -1,10 +1,10 @@
-/*global PitchAnalyzer:true, Float32Array:false, module:false */
+/*global PitchAnalyzer:true, Float32Array:false, FFT:false */
+/*jshint undef:true node:true browser:true */
 
 PitchAnalyzer = this.PitchAnalyzer = (function () {
 
 var	pi	= Math.PI,
 	pi2	= pi * 2,
-	sin	= Math.sin,
 	cos	= Math.cos,
 	pow	= Math.pow,
 	log	= Math.log,
@@ -435,7 +435,7 @@ Analyzer.prototype = {
 	},
 
 	processFFT: function (data, wnd) {
-		var i, n;
+		var i;
 
 		for (i=0; i<data.length; i++) {
 			this.fftInput[i] = data[i] * wnd[i];
