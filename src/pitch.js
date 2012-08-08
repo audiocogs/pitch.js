@@ -120,6 +120,7 @@ Peak.prototype = {
 /**
  * Finds the best matching peak from a certain point in the array of peaks.
  *
+ * @name match
  * @static Peak
  * @private
  * @arg {Array} peaks The peaks to search from.
