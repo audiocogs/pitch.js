@@ -35,8 +35,8 @@ if (tone === null) {
 
 ### Authors
 
-pitch.js is brought to you by [Official.fm Labs](http://labs.official.fm). Please see [./docs/AUTHORS.md](https://github.com/ofmlabs/pitch.js/blob/master/docs/AUTHORS.md) for more details.
+pitch.js is brought to you by [Audiocogs](http://audiocogs.org). Please see [./docs/AUTHORS.md](https://github.com/audiocogs/pitch.js/blob/master/docs/AUTHORS.md) for more details.
 
 ## License
 
-This code is ported from original C++ code by Lasse Kärkkäinen, hence licensed under GPLv2, as is the original. Please see [pitch.js/docs/LICENSE.txt](https://github.com/ofmlabs/pitch.js/blob/master/docs/LICENSE.txt) for further information.
+This code is ported from original C++ code by Lasse Kärkkäinen, hence licensed under GPLv2, as is the original. Please see [pitch.js/docs/LICENSE.txt](https://github.com/audiocogs/pitch.js/blob/master/docs/LICENSE.txt) for further information.
